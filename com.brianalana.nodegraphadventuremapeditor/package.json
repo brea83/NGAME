@@ -1,0 +1,19 @@
+{
+	"name": "com.brianalana.nodegraphadventuremapeditor",
+	"displayName": "NodeGraph Adventure Map Editor",
+	"version": "0.1.0",
+	"unity": "6000.3",
+	"unityRelease": "11f1",
+	"description": "A node-graph based map editor that allows the designer to reuse rooms while populating them with different encounters.",
+	"dependencies": {
+		"com.unity.test-framework": "1.6.0"
+	},
+	"author": {
+		"name": "BrianaDempsey",
+		"url": "https://github.com/brea83",
+		"email": "brianandempsey@gmail.com"
+	},
+	"changelogUrl": "https://example.com/changelog.html",
+	"documentationUrl": "https://example.com/",
+	"licensesUrl": "https://example.com/licensing.html"
+}

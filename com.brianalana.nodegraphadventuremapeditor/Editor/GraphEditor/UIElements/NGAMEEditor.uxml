@@ -1,0 +1,7 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/NGAME/Editor/GraphEditor/UIElements/Styles/NGAMEEditorStyle.uss?fileID=7433441132597879392&amp;guid=9cfa100fc998a4b48b177172f8fb2461&amp;type=3#NGAMEEditorStyle"/>
+    <editor:Toolbar>
+        <editor:ToolbarMenu text="File" name="FileMenu"/>
+    </editor:Toolbar>
+    <NGAME.Editor.RoomGraphView style="flex-grow: 1;"/>
+</engine:UXML>

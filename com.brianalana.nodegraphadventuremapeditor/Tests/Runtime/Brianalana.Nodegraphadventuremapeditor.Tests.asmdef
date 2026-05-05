@@ -1,0 +1,11 @@
+{
+    "name": "Brianalana.Nodegraphadventuremapeditor.Tests",
+    "references": [
+        "Brianalana.Nodegraphadventuremapeditor"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": []
+}
