@@ -12,6 +12,11 @@ using UnityEngine.UIElements;
 
 namespace NGAME.Editor
 {
+    /// <summary>
+    /// Settings window for the Nodegraph Adventure Map Editor
+    /// This is where you can see which scenes contain the data that is required to be compatible with this tool,
+    ///  and toggle which scenes are included in the graph tool's scene dropdown.
+    /// </summary>
     public class NGAMESettings : EditorWindow
     {
         private SO_Settings m_Settings;
@@ -39,7 +44,7 @@ namespace NGAME.Editor
         private StyleSheet m_Styles;
 
         //private bool m_SettingsAreLoaded = false;
-        public static void ShowEditorFromSO()
+        private static void ShowEditorFromSO()
         {
             NGAMESettings wnd = GetWindow<NGAMESettings>();
             wnd.titleContent = new GUIContent("NGAME Settings");
