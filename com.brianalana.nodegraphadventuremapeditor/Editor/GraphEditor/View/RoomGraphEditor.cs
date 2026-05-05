@@ -161,6 +161,10 @@ namespace NGAME.Editor
 
         private void OnDestroy()
         {
+            if(_graph != null)
+            {
+                //_graph.OnWindowDestroy();
+            }
             ClearCachedSceneData();
         }
         private void OnActiveSceneChanged(Scene currentScene, Scene nextScene)
@@ -179,6 +183,11 @@ namespace NGAME.Editor
         {
             m_PlaymodeEntranceRequest = entrance;
             m_PlaymodeGraphPath = AssetDatabase.GetAssetPath(_graph);
+            if(hasUnsavedChanges)
+            {
+                ShowSaveDialogue();
+            }
+
             m_PlaymodeRequestSent = false;
             Debug.Log("NGAME Editor recieved request to enter: " + entrance);
 

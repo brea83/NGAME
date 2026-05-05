@@ -152,12 +152,17 @@ namespace NGAME.Editor
             this.AddManipulator(new RectangleSelector());
 
             m_UndoableGraphChanges = UndoableGraphChanges.CreateNew();
+            m_UndoableGraphChanges.hideFlags = HideFlags.DontUnloadUnusedAsset;
 
             //var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/RoomGraphEditor.uss");
             //styleSheets.Add(styleSheet);
             Undo.undoRedoPerformed += OnUndoRedo;
         }
         
+        //internal public void OnWindowDestroy()
+        //{
+
+        //}
         
 
         protected void OnUndoRedo()
@@ -215,6 +220,11 @@ namespace NGAME.Editor
             if (newData == null)
                 return;
 
+            if(m_UndoableGraphChanges == null)
+            {
+                m_UndoableGraphChanges = UndoableGraphChanges.CreateNew();
+                m_UndoableGraphChanges.hideFlags = HideFlags.DontUnloadUnusedAsset;
+            }
             m_UndoableGraphChanges.AddSceneDataRef(newData);
         }
 
@@ -338,6 +348,13 @@ namespace NGAME.Editor
             AssetDatabase.ForceReserializeAssets(paths);
             AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(_graph), ImportAssetOptions.ForceUpdate);
             AssetDatabase.Refresh();
+
+            if (m_UndoableGraphChanges == null)
+                m_UndoableGraphChanges = UndoableGraphChanges.CreateNew();
+            else
+                m_UndoableGraphChanges.Reset();
+
+            m_UndoableGraphChanges.hideFlags = HideFlags.DontUnloadUnusedAsset;
 
             PopulateView(_graph);
         }
