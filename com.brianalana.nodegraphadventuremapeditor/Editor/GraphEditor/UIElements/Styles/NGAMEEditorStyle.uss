@@ -37,6 +37,14 @@ GridBackground {
     font-size: 12.0px;
 }
 
+.listHeader-rounded
+{
+    border-width: 1px;
+    border-color: #212121;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+}
+
 .nodeExtension, .unity-text-element.nodeExtension, .unity-label.nodeExtension
 {
     background-color: rgb(56, 56, 56);
@@ -99,7 +107,7 @@ GridBackground {
     border-radius: 5px;
     min-width: 100px;
     min-height: 100px;
-    width: 200px;
+    width: 350px;
     height: 400px;
 }
 

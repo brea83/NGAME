@@ -62,10 +62,14 @@ namespace NGAME.Editor
             //m_ArraySizeProperty = serializedObject.FindProperty(conditionsList.propertyPath + ".Array.size");
             VisualElement result = new();
             result.style.flexDirection = FlexDirection.Column;
+
             Label label = new("Entrance Conditions");
+            label.AddToClassList("header2");
+            label.AddToClassList("listHeader-rounded");
             result.Add(label);
 
             ListView listElement = CreateListView(conditionsList);
+            listElement.AddToClassList("unity-collection-view--with-border");
             result.Add(listElement);
 
             result.Add(CreateConditionSelector(conditionsList));
