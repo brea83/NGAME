@@ -19,7 +19,7 @@ namespace NGAME.Editor
     /// </summary>
     public class NGAMESettings : EditorWindow
     {
-        private SO_Settings m_Settings;
+        private SO_NGAME_Settings m_Settings;
 
         [SerializeField] private int m_CompatibleListSelectedIndex = -1;
         private int m_IncompatibleListSelectedIndex = -1;
@@ -63,10 +63,17 @@ namespace NGAME.Editor
             // Limit size of the window.
             wnd.minSize = new Vector2(450, 200);
 
-            string[] settingsGuid = AssetDatabase.FindAssets("t:SO_Settings");
-            if (settingsGuid.Length <= 0)
-                return;
-            SO_Settings settings = AssetDatabase.LoadAssetAtPath<SO_Settings>(AssetDatabase.GUIDToAssetPath(settingsGuid[0]));
+            SO_NGAME_Settings settings = null;
+            string[] settingsGuids = AssetDatabase.FindAssets("t:SO_NGAME_Settings");
+            if (settingsGuids.Length <= 0)
+            {
+                // no settings found make a new one
+                settings = CreateNewSettingsFile();
+            }
+            else
+            {
+                settings = AssetDatabase.LoadAssetAtPath<SO_NGAME_Settings>(AssetDatabase.GUIDToAssetPath(settingsGuids[0]));
+            }
             wnd.m_Settings = settings;
             wnd.m_SettingsSelectorField.SetValueWithoutNotify(settings);
             wnd.LoadSettingsObject();
@@ -74,13 +81,22 @@ namespace NGAME.Editor
             wnd.PopulateSceneList(wnd.m_IncompatibleScenesListView, wnd.m_UncompatibleScenes);
         }
 
+        private static SO_NGAME_Settings CreateNewSettingsFile()
+        {
+            SO_NGAME_Settings newSettings = SO_NGAME_Settings.CreateInstance<SO_NGAME_Settings>();
+
+            AssetDatabase.CreateAsset(newSettings, "Assets/NGAME_Settings.asset");
+            AssetDatabase.SaveAssets();
+            return newSettings;
+        }
+
         [OnOpenAssetAttribute(1)]
         public static bool OpenEditorFromSO(UnityEngine.EntityId entityID, int line)
         {
-            //SO_Settings settings = EditorUtility.EntityIdToObject(entityID) as SO_Settings;
+            //SO_NGAME_Settings settings = EditorUtility.EntityIdToObject(entityID) as SO_NGAME_Settings;
             string filepath = AssetDatabase.GetAssetPath(entityID);
             System.Type assetType = AssetDatabase.GetMainAssetTypeAtPath(filepath);
-            if (assetType == typeof(SO_Settings))
+            if (assetType == typeof(SO_NGAME_Settings))
             {
                 ShowEditorFromSO();
                 return false;
@@ -94,9 +110,9 @@ namespace NGAME.Editor
         {
             string filepath = AssetDatabase.GetAssetPath(entityID);
             System.Type assetType = AssetDatabase.GetMainAssetTypeAtPath(filepath);
-            if (assetType == typeof(SO_Settings))
+            if (assetType == typeof(SO_NGAME_Settings))
             {
-                SO_Settings settings = AssetDatabase.LoadAssetAtPath<SO_Settings>(filepath);
+                SO_NGAME_Settings settings = AssetDatabase.LoadAssetAtPath<SO_NGAME_Settings>(filepath);
                 if(settings != null)
                 {
                     //Debug.Log("NGAME SETTINGS is recieving initial settings values");
@@ -154,15 +170,15 @@ namespace NGAME.Editor
         private ObjectField CreateSettingsObjectField()
         {
             var objectField = new ObjectField("Settings File");
-            objectField.objectType = typeof(SO_Settings);
+            objectField.objectType = typeof(SO_NGAME_Settings);
 
             objectField.SetValueWithoutNotify(m_Settings);
 
             objectField.RegisterValueChangedCallback(evt =>
             {
-                if (evt.newValue is SO_Settings)
+                if (evt.newValue is SO_NGAME_Settings)
                 {
-                    m_Settings = evt.newValue as SO_Settings;
+                    m_Settings = evt.newValue as SO_NGAME_Settings;
                     LoadSettingsObject();
                     PopulateSceneList(m_CompatibleScenesListView, m_CompatibleScenes);
                     PopulateSceneList(m_IncompatibleScenesListView, m_UncompatibleScenes);
@@ -537,11 +553,12 @@ namespace NGAME.Editor
                     foreach (IEncounterRegionConnector component in components)
                     {
                         RegionConnectionData data = component.GetRegionConnectionData();
-                        description.Append("Found " + data.TypeName + "\n");
-                        description.Append("Connection Type: " + data.ConnectionType.ToString() + "\n");
+                        description.Append($"Found: {data.Name}\n");
+                        description.Append($"IEncounterRegionConnector type: {component.GetType().Name}\n");
+                        description.Append($"Connection Type: {data.ConnectionType.ToString() }\n");
                         //description.Append("Is Lockable: " + data.IsLockable.ToString() + "\n");
 
-                        description.Append("Position: " + data.Position.ToString() + "\n");
+                        description.Append($"Position: { data.Position.ToString() }\n");
                         description.Append("-------------\n");
                     }
                 }

@@ -612,7 +612,7 @@ namespace NGAME.Editor
                 return;
             }
 
-            SO_Settings settings = AssetDatabase.LoadAssetAtPath<SO_Settings>(AssetDatabase.GUIDToAssetPath(settingsGuid[0]));
+            SO_NGAME_Settings settings = AssetDatabase.LoadAssetAtPath<SO_NGAME_Settings>(AssetDatabase.GUIDToAssetPath(settingsGuid[0]));
 
             if (settings == null || settings.Scenes.Count <= 0)
             {

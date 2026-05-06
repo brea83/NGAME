@@ -16,8 +16,7 @@ namespace NGAME.Editor
         public bool IsMarkedForDelete = false;
     }
 
-    [CreateAssetMenu(fileName = "SO_Settings", menuName = "NGAME/SO_Settings")]
-    public class SO_Settings : ScriptableObject
+    public class SO_NGAME_Settings : ScriptableObject
     {
         public string Name = "Default Settings";
         public string Guid;

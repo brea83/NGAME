@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace NGAME
 {
-    [CreateAssetMenu]
+    [CreateAssetMenu(fileName = "NGAME_Graph", menuName = "NGAME/New Graph")]
     public class RoomGraph : ScriptableObject
     {
         public RoomNode rootNode;

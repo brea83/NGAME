@@ -506,14 +506,14 @@ namespace NGAME.Editor
 
         private void ReadCurrentSceneData()
         {
-            string[] settingsGuid = AssetDatabase.FindAssets("t:SO_Settings");
+            string[] settingsGuid = AssetDatabase.FindAssets("t:SO_NGAME_Settings");
 
             if (settingsGuid.Length <= 0)
             {
                 return;
             }
 
-            SO_Settings settings = AssetDatabase.LoadAssetAtPath<SO_Settings>(AssetDatabase.GUIDToAssetPath(settingsGuid[0]));
+            SO_NGAME_Settings settings = AssetDatabase.LoadAssetAtPath<SO_NGAME_Settings>(AssetDatabase.GUIDToAssetPath(settingsGuid[0]));
 
             if (settings == null || settings.Scenes.Count <= 0)
             {
