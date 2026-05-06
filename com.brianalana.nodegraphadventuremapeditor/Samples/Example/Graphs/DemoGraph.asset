@@ -1,0 +1,170 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-2827136667000207809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
+  m_Name: 'DemoGraph: Room 1'
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
+  SceneData: {fileID: 3315403053071454974}
+  OverridenConnectionData:
+  - Name: OneWay Drop Exit
+    ConnectionType: 1
+    EntranceConditions: []
+    Position: {x: 18.52, y: 6.01, z: 21.35}
+  - Name: OneWay Drop Entrance
+    ConnectionType: 0
+    EntranceConditions: []
+    Position: {x: 18.52, y: 6.01, z: 21.35}
+  - Name: North door
+    ConnectionType: 2
+    EntranceConditions: []
+    Position: {x: 0, y: 0.43999982, z: 59.57}
+  - Name: West Door
+    ConnectionType: 2
+    EntranceConditions: []
+    Position: {x: -19, y: 0.43999982, z: 37.58}
+  OutgoingEdges:
+  - SourceNodeGuid: 8fa296ae3d9c18b4390b2266ad6f0354
+    SourceSceneGuid: 755d984078ed8f8458aeff7f2b6c06a7
+    SourceSceneName: ConnectionTypesDemo
+    SourcePortName: OneWay Drop Exit
+    DestinationNodeGuid: f66e7298e0fa9cc45b508ba25740d9b1
+    DestinationSceneGuid: 26330a1f55c2ef64dae7dcc79419933f
+    DestinationSceneName: SpawnTypesDemo
+    DestinationPortName: OneWay Entrance
+    m_bIsValid: 1
+  IncomingEdges: []
+  Waves: []
+  m_Guid: 8fa296ae3d9c18b4390b2266ad6f0354
+  m_Position: {x: 340, y: 91.33334}
+  _isStartNode: 1
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18896188af12d0a41a178d67d66c5b78, type: 3}
+  m_Name: DemoGraph
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomGraph
+  rootNode: {fileID: -2827136667000207809}
+  nodes:
+  - {fileID: -2827136667000207809}
+  - {fileID: 2252607232225639293}
+--- !u!114 &2252607232225639293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebc2203228bd3541bec8448fcdbb7e6, type: 3}
+  m_Name: 'DemoGraph: Room 2'
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
+  SceneData: {fileID: 7697363395655139885}
+  OverridenConnectionData:
+  - Name: OneWay Entrance
+    ConnectionType: 0
+    EntranceConditions: []
+    Position: {x: 18.5, y: 3.25, z: 18.5}
+  - Name: TwoWay door
+    ConnectionType: 2
+    EntranceConditions: []
+    Position: {x: -0.12, y: 0.19, z: -19.43}
+  OutgoingEdges: []
+  IncomingEdges:
+  - SourceNodeGuid: 8fa296ae3d9c18b4390b2266ad6f0354
+    SourceSceneGuid: 755d984078ed8f8458aeff7f2b6c06a7
+    SourceSceneName: ConnectionTypesDemo
+    SourcePortName: OneWay Drop Exit
+    DestinationNodeGuid: f66e7298e0fa9cc45b508ba25740d9b1
+    DestinationSceneGuid: 26330a1f55c2ef64dae7dcc79419933f
+    DestinationSceneName: SpawnTypesDemo
+    DestinationPortName: OneWay Entrance
+    m_bIsValid: 1
+  Waves: []
+  m_Guid: f66e7298e0fa9cc45b508ba25740d9b1
+  m_Position: {x: 884.6667, y: 91.33339}
+  _isStartNode: 0
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &3315403053071454974
+MonoBehaviour:
+  m_ObjectHideFlags: 61
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc3768443858dad479f2cbca8d56449d, type: 3}
+  m_Name: ConnectionTypesDemo
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.SceneData
+  Guid: 755d984078ed8f8458aeff7f2b6c06a7
+  FilePath: Packages/com.brianalana.nodegraphadventuremapeditor/Samples/Example/Scenes/ConnectionTypesDemo.unity
+  Description: 
+  UniqueConnectionObjects:
+  - Name: OneWay Drop Exit
+    ConnectionType: 1
+    EntranceConditions: []
+    Position: {x: 18.52, y: 6.01, z: 21.35}
+  - Name: OneWay Drop Entrance
+    ConnectionType: 0
+    EntranceConditions: []
+    Position: {x: 18.52, y: 6.01, z: 21.35}
+  - Name: North door
+    ConnectionType: 2
+    EntranceConditions: []
+    Position: {x: 0, y: 0.43999982, z: 59.57}
+  - Name: West Door
+    ConnectionType: 2
+    EntranceConditions: []
+    Position: {x: -19, y: 0.43999982, z: 37.58}
+  SpawnPoints: []
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &7697363395655139885
+MonoBehaviour:
+  m_ObjectHideFlags: 61
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc3768443858dad479f2cbca8d56449d, type: 3}
+  m_Name: SpawnTypesDemo
+  m_EditorClassIdentifier: NGAME_Runtime::NGAME.SceneData
+  Guid: 26330a1f55c2ef64dae7dcc79419933f
+  FilePath: Packages/com.brianalana.nodegraphadventuremapeditor/Samples/Example/Scenes/SpawnTypesDemo.unity
+  Description: 
+  UniqueConnectionObjects:
+  - Name: OneWay Entrance
+    ConnectionType: 0
+    EntranceConditions: []
+    Position: {x: 18.5, y: 3.25, z: 18.5}
+  - Name: TwoWay door
+    ConnectionType: 2
+    EntranceConditions: []
+    Position: {x: -0.12, y: 0.19, z: -19.43}
+  SpawnPoints: []
+  references:
+    version: 2
+    RefIds: []

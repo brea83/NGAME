@@ -26,10 +26,10 @@ namespace NGAME.Editor
             UnityEngine.UIElements.PopupWindow popup = new();
             popup.text = property.FindPropertyRelative("Name").stringValue;
 
-            PropertyField type = new(property.FindPropertyRelative("TypeName"));
-            type.Bind(property.serializedObject);
-            type.SetEnabled(false);
-            popup.Add(type);
+            //PropertyField type = new(property.FindPropertyRelative("TypeName"));
+            //type.Bind(property.serializedObject);
+            //type.SetEnabled(false);
+            //popup.Add(type);
 
             //PropertyField position = new(property.FindPropertyRelative("Position"));
             //position.Bind(property.serializedObject);

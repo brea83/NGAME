@@ -1160,8 +1160,8 @@ namespace NGAME.Editor
                         if(entrances != null)
                             destinationEntrance = entrances.FirstOrDefault((RegionConnectionData connection) => connection.Name == destinationPort.portName);
 
-                        bool sourceUninitialized = string.IsNullOrEmpty(sourceExit.TypeName);
-                        bool destinationUninitialized = string.IsNullOrEmpty(destinationEntrance.TypeName);
+                        bool sourceUninitialized = string.IsNullOrEmpty(sourceExit.Name);
+                        bool destinationUninitialized = string.IsNullOrEmpty(destinationEntrance.Name);
                         bool error = sourceUninitialized || destinationUninitialized;
 
                         if (error)

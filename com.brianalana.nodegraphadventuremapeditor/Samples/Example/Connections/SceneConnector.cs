@@ -23,6 +23,11 @@ public class SceneConnector : MonoBehaviour, IEncounterRegionConnector
 
     private string m_DestinationScene;
     private string m_ConnectorInDestination;
+    private void Awake()
+    {
+        m_data.TypeName = this.GetType().Name;
+        m_data.Name = name;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -38,6 +43,9 @@ public class SceneConnector : MonoBehaviour, IEncounterRegionConnector
 
     public RegionConnectionData GetRegionConnectionData()
     {
+        m_data.TypeName = this.GetType().Name;
+        m_data.Name = name;
+        m_data.Position = transform.position;
         return m_data;
     }
 
@@ -45,7 +53,6 @@ public class SceneConnector : MonoBehaviour, IEncounterRegionConnector
     {
         m_data.ConnectionType = connectionData.ConnectionType;
         m_data.EntranceConditions = connectionData.EntranceConditions;
-        
         SetDestination(edge);
     }
 
