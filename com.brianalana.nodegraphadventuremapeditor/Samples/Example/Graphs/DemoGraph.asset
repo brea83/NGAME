@@ -14,19 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
   SceneData: {fileID: 3315403053071454974}
   OverridenConnectionData:
-  - Name: OneWay Drop Exit
+  - TypeName: 
+    Name: OneWay Drop Exit
     ConnectionType: 1
     EntranceConditions: []
     Position: {x: 18.52, y: 6.01, z: 21.35}
-  - Name: OneWay Drop Entrance
+  - TypeName: 
+    Name: OneWay Drop Entrance
     ConnectionType: 0
     EntranceConditions: []
     Position: {x: 18.52, y: 6.01, z: 21.35}
-  - Name: North door
+  - TypeName: 
+    Name: North door
     ConnectionType: 2
     EntranceConditions: []
     Position: {x: 0, y: 0.43999982, z: 59.57}
-  - Name: West Door
+  - TypeName: 
+    Name: West Door
     ConnectionType: 2
     EntranceConditions: []
     Position: {x: -19, y: 0.43999982, z: 37.58}
@@ -78,11 +82,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: NGAME_Runtime::NGAME.RoomNode
   SceneData: {fileID: 7697363395655139885}
   OverridenConnectionData:
-  - Name: OneWay Entrance
+  - TypeName: 
+    Name: OneWay Entrance
     ConnectionType: 0
     EntranceConditions: []
     Position: {x: 18.5, y: 3.25, z: 18.5}
-  - Name: TwoWay door
+  - TypeName: 
+    Name: TwoWay door
     ConnectionType: 2
     EntranceConditions: []
     Position: {x: -0.12, y: 0.19, z: -19.43}
@@ -97,9 +103,12 @@ MonoBehaviour:
     DestinationSceneName: SpawnTypesDemo
     DestinationPortName: OneWay Entrance
     m_bIsValid: 1
-  Waves: []
+  Waves:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   m_Guid: f66e7298e0fa9cc45b508ba25740d9b1
-  m_Position: {x: 884.6667, y: 91.33339}
+  m_Position: {x: 885.43353, y: 91.33336}
   _isStartNode: 0
   references:
     version: 2
@@ -120,19 +129,23 @@ MonoBehaviour:
   FilePath: Packages/com.brianalana.nodegraphadventuremapeditor/Samples/Example/Scenes/ConnectionTypesDemo.unity
   Description: 
   UniqueConnectionObjects:
-  - Name: OneWay Drop Exit
+  - TypeName: 
+    Name: OneWay Drop Exit
     ConnectionType: 1
     EntranceConditions: []
     Position: {x: 18.52, y: 6.01, z: 21.35}
-  - Name: OneWay Drop Entrance
+  - TypeName: 
+    Name: OneWay Drop Entrance
     ConnectionType: 0
     EntranceConditions: []
     Position: {x: 18.52, y: 6.01, z: 21.35}
-  - Name: North door
+  - TypeName: 
+    Name: North door
     ConnectionType: 2
     EntranceConditions: []
     Position: {x: 0, y: 0.43999982, z: 59.57}
-  - Name: West Door
+  - TypeName: 
+    Name: West Door
     ConnectionType: 2
     EntranceConditions: []
     Position: {x: -19, y: 0.43999982, z: 37.58}
@@ -156,11 +169,13 @@ MonoBehaviour:
   FilePath: Packages/com.brianalana.nodegraphadventuremapeditor/Samples/Example/Scenes/SpawnTypesDemo.unity
   Description: 
   UniqueConnectionObjects:
-  - Name: OneWay Entrance
+  - TypeName: 
+    Name: OneWay Entrance
     ConnectionType: 0
     EntranceConditions: []
     Position: {x: 18.5, y: 3.25, z: 18.5}
-  - Name: TwoWay door
+  - TypeName: 
+    Name: TwoWay door
     ConnectionType: 2
     EntranceConditions: []
     Position: {x: -0.12, y: 0.19, z: -19.43}

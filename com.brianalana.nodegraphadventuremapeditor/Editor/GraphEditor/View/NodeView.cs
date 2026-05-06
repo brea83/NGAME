@@ -42,7 +42,7 @@ namespace NGAME.Editor
         public SceneSpawnData CurrentSpawnData { get => m_CurrentSceneSpawnData; }
         private SceneSpawnData m_CurrentSceneSpawnData;
         private VisualElement m_EncountersContainer;
-        private ScrollView m_SpawningScrollView;
+        private VisualElement m_SpawnerDataContainer;
 
         private VisualElement m_WavesContainer;
         private List<VisualElement> m_WaveItems = new List<VisualElement>();
@@ -61,6 +61,7 @@ namespace NGAME.Editor
 
             style.left = node.Position.x;
             style.top = node.Position.y;
+            style.flexGrow = 1;
             
             //_roomDataObjects = roomDataObjects;
 
@@ -112,16 +113,22 @@ namespace NGAME.Editor
             Foldout spawnDataLabel = new();
             spawnDataLabel.text = "Count of Spawners by Allowed Type";
             spawnDataLabel.AddToClassList("header3");
+            spawnDataLabel.value = true;
+            spawnDataLabel.RegisterValueChangedCallback(bValue =>
+            {
+                RefreshExpandedState();
+            });
             m_EncountersContainer.Add(spawnDataLabel);
 
 
-            m_SpawningScrollView = new ScrollView();
-            spawnDataLabel.Add(m_SpawningScrollView);
+            m_SpawnerDataContainer = new();
+            spawnDataLabel.Add(m_SpawnerDataContainer);
 
             m_WavesContainer = new VisualElement();
+            m_WavesContainer.AddToClassList("header3");
             VisualElement headerPanel = new();
             headerPanel.style.flexDirection = FlexDirection.Row;
-            headerPanel.AddToClassList("header3");
+            //headerPanel.AddToClassList("header3");
 
             Label wavesLabel = new();
             wavesLabel.text = "Waves";
@@ -138,8 +145,7 @@ namespace NGAME.Editor
 
 
             extensionContainer.Add(m_EncountersContainer);
-            extensionContainer.style.flexGrow = 1.0f;
-            RefreshExpandedState();
+            //extensionContainer.style.flexGrow = 1.0f;
             
 
             CreateInputPorts();
@@ -147,6 +153,7 @@ namespace NGAME.Editor
 
             UpdateCurrentSceneSpawnData();
             PopulateEncounterContainer();
+            RefreshExpandedState();
 
             //RegisterCallback<AttachToPanelEvent>(evt =>
             //{
@@ -274,7 +281,9 @@ namespace NGAME.Editor
 
             m_RoomSelectDropdown = new DropdownField(choices, defaultIndex);
             titleButtonContainer.Add(m_RoomSelectDropdown);
-            
+            titleButtonContainer.style.flexShrink = 0;
+            titleButtonContainer.style.flexGrow = 0;
+
             m_RoomSelectDropdown.RegisterValueChangedCallback(OnSceneDropdownChanged);
             m_RoomSelectDropdown.SendToBack();
             EditSceneButton.SendToBack();
@@ -282,7 +291,7 @@ namespace NGAME.Editor
         
         private void PopulateEncounterContainer()
         {
-            m_SpawningScrollView.Clear();
+            m_SpawnerDataContainer.Clear();
             if(Node.SceneData == null)
             {
                 return;
@@ -300,7 +309,7 @@ namespace NGAME.Editor
                     Label label = new Label();
                     label.AddToClassList("ListItem");
                     label.text = spawnerType + ": " + spawnerCount.ToString();
-                    m_SpawningScrollView.Add(label);
+                    m_SpawnerDataContainer.Add(label);
                 }
             }
 
@@ -354,6 +363,7 @@ namespace NGAME.Editor
 
             UpdateCurrentSceneSpawnData();
             PopulateEncounterContainer();
+            RefreshExpandedState();
 
             m_RegionPreview.UpdateBounds();
             EditorUtility.SetDirty(Node);
@@ -775,7 +785,6 @@ namespace NGAME.Editor
             Node.AddWave(wave);
             CreateWaveItem(wave, Node.Waves.Count -1);
             OnValuesChanged();
-            
         }
 
         private void RemoveWave(VisualElement waveItem, int waveIndex)
@@ -1276,6 +1285,7 @@ namespace NGAME.Editor
             {
                 OnNodeValuesChanged.Invoke(this);
             }
+            RefreshExpandedState();
         }
         
     }
