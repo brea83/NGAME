@@ -5,137 +5,35 @@ using UnityEngine.Events;
 
 namespace NGAME
 {
-    public enum RegionConnectionType
-    {
-        EntranceOnly = 0,
-        ExitOnly = 1,
-        ExitAndEntrance = 2,
-    }
-
-    [Serializable]
-    public struct RegionConnectionData
-    {
-        public string TypeName;// = "IEncounterRegionConnector";
-        public string Name;//= "Object Name";
-        public RegionConnectionType ConnectionType;
-        [SerializeReference]
-        public List<EntranceCondition> EntranceConditions;
-        public Vector3 Position;
-    }
-    [Serializable]
-    public class SceneConnectionsData
-    {
-        public string SceneName = "";
-        public string SceneGuid = "";
-        [HideInInspector]
-        public List<RegionConnectionData> Entrances = new();
-        [HideInInspector]
-        public List<RegionConnectionData> Exits = new();
-        [HideInInspector]
-        public Vector2 MinPoint = Vector3.zero;
-        [HideInInspector]
-        public Vector2 MaxPoint = Vector3.zero;
-        [HideInInspector]
-        public Vector2 WidthByHeight = Vector2.zero;
-
-        public SceneConnectionsData() { }
-        public SceneConnectionsData(SceneData sceneData)
-        {
-            SceneName = sceneData.Name;
-            SceneGuid = sceneData.Guid;
-
-            foreach (RegionConnectionData connection in sceneData.UniqueConnectionObjects)
-            {
-                switch (connection.ConnectionType)
-                {
-                    case RegionConnectionType.EntranceOnly:
-                        Entrances.Add(connection);
-                        break;
-                    case RegionConnectionType.ExitOnly:
-                        Exits.Add(connection);
-                        break;
-                    case RegionConnectionType.ExitAndEntrance:
-                        Entrances.Add(connection);
-                        Exits.Add(connection);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            UpdateBounds();
-        }
-
-        public SceneConnectionsData ShallowCopy()
-        {
-            return (SceneConnectionsData)MemberwiseClone();
-        }
-
-        public SceneConnectionsData DeepCopy()
-        {
-            SceneConnectionsData other = (SceneConnectionsData)MemberwiseClone();
-            other.Exits = new List<RegionConnectionData>(Exits);
-            other.Entrances = new List<RegionConnectionData>(Entrances);
-            other.MinPoint = MinPoint;
-            other.MaxPoint = MaxPoint;
-            other.WidthByHeight = WidthByHeight;
-
-            return other;
-        }
-
-        public void UpdateBounds()
-        {
-            Vector3 min = CalculateMinBounds();
-            Vector3 max = CalculateMaxBounds();
-            MinPoint.x = min.x;
-            MinPoint.y = min.z;
-
-            MaxPoint.x = max.x;
-            MaxPoint.y = max.z;
-
-            WidthByHeight = new Vector2(max.x - min.x, max.z - min.z);
-        }
-        public Vector3 CalculateMinBounds()
-        {
-            Vector3 min = new Vector2(float.MaxValue, float.MaxValue);
-
-            foreach(RegionConnectionData entrance in Entrances)
-            {
-                min = Vector3.Min(min, entrance.Position);
-            }
-
-            foreach(RegionConnectionData exit in Exits)
-            {
-                min = Vector3.Min(min, exit.Position);
-            }
-
-            return min;
-        }
-
-        public Vector3 CalculateMaxBounds()
-        {
-            Vector3 max = new Vector2(float.MinValue, float.MinValue);
-
-            foreach (RegionConnectionData entrance in Entrances)
-            {
-                max = Vector3.Max(max, entrance.Position);
-            }
-
-            foreach (RegionConnectionData exit in Exits)
-            {
-                max = Vector3.Max(max, exit.Position);
-            }
-
-            return max;
-        }
-    }
+    /// <summary>
+    /// Interface the graph looks for on game objects in a scene, 
+    /// the graph then uses their data to create ports on nodes associated with the scene
+    /// and also to place representations of these connections within the preview image on a node
+    /// </summary>
     public interface IEncounterRegionConnector
     {
+        /// <summary>
+        /// Returns RegionConnectionData. Could be used to return defaults or current data depending on implementation.
+        /// </summary>
+        /// <returns></returns>
         public RegionConnectionData GetRegionConnectionData();
+        /// <summary>
+        /// Intended for setting or overriding destination information.
+        /// </summary>
+        /// <param name="edge"> edge data where the source matches the calling IEncounterRegionConnector and the destination is another</param>
         public void SetDestination(EdgeData edge);
-
+        /// <summary>
+        /// This event getter is a work around 
+        /// for the fact that interfaces cannot actually require the event directly
+        /// </summary>
         public UnityEvent<EdgeData> ConnectorActivated { get; }
-
+        /// <summary>
+        /// Intended to allow the graph to overwrite some or all of the connection data 
+        /// when a room is loaded via graph traversal. It also provides destination information
+        /// reflecting what other part of the graph this connector is connected to.
+        /// </summary>
+        /// <param name="connectionData">connection data overrides from the graph.</param> 
+        /// <param name="edge">data about the connection between this connector and another node in the graph.</param> 
         public void InitializeFromGraphData(RegionConnectionData connectionData, EdgeData edge);
     }
 }
