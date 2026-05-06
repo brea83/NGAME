@@ -125,8 +125,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3a03cc5e2fe8ab4b8ed96ee2d4d4d21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: NGAME.Example::SpawnerDemo
-  spawnData:
-    Name: Type A Spawner
-    ValidTypes:
-    - {fileID: 11400000, guid: e5e3c24ea85246e4194e4d08d943979a, type: 2}
-    Position: {x: 0, y: 0, z: 0}
+  m_AllowedSpawnTypes:
+  - {fileID: 11400000, guid: e5e3c24ea85246e4194e4d08d943979a, type: 2}
