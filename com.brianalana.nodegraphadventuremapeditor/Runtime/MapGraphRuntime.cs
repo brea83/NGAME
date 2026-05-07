@@ -1,23 +1,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-
-
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 namespace NGAME
 {
+    /// <summary>
+    /// This class handles traversing the graph data at runtime, and keep track of the current RoomNode. 
+    /// It can accept requests to go to specific nodes, 
+    /// or to follow specific connections between nodes via EdgeData.
+    /// It is also set up to handle those requests coming from the graph in editor mode.
+    /// </summary>
     public class MapGraphRuntime : MonoBehaviour
     {
-        //public UnityEvent RoomLoadStart;
-        //public UnityEvent<IEncounterRegionConnector> RoomLoadComplete;
+        
         public UnityEvent<MapGraphRuntime> PlaymodeStartedFromGraph;
         private bool m_PlaymodeFromGraphInvoked = false;
-        //[Header("Room Load Effects")]
-        //public CircleWipeControler CircleWipe;
 
         public RoomNode CurrentRoom {get => m_CurrentRoom;}
         public EdgeData LastTraversedEdge { get => m_MostRecentlyTraversedEdge;}
@@ -40,6 +40,14 @@ namespace NGAME
 
         protected Dictionary<string, int> m_RoomGuidVisitCounts = new();
 
+        /// <summary>
+        /// If EnableNavigation is true we initialize the current room 
+        /// to be the root node of the graph, otherwise we set the current
+        /// room to be null so that any navigation system using this graph 
+        /// if the current room has already been set we do not reset it to 
+        /// the roon node. This is also when optional debug print of the graph 
+        /// happens if PrintDebugLogs is enabled. 
+        /// </summary>
         private void Start()
         {
             StringBuilder sb = new StringBuilder();
@@ -49,27 +57,22 @@ namespace NGAME
                 m_Graph.PrintGraph();
             }
 
-            if(m_CurrentRoom == null)
-                m_CurrentRoom = m_Graph.rootNode;
-
             if (!EnableNavigation)
             {
+                m_CurrentRoom = null;
                 return;
             }
 
-            //SceneManager.sceneLoaded += OnSceneLoaded;
-            //if( m_CurrentRoom.SceneData!= null && m_CurrentRoom.SceneData.SceneName != SceneManager.GetActiveScene().name)
-            //{
-            //    StartCoroutine(LoadAfterSeconds(2, m_CurrentRoom.SceneData.SceneName));
-            //}
-            //else
-            //{
-            //    //m_CurrentRoomExits = m_CurrentRoom.GetAllEdgesAsOutgoing();
-            //    //InitConnectorsAndSpawners(SceneManager.GetActiveScene());
-            //    OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
-            //}
+            if(m_CurrentRoom == null)
+                m_CurrentRoom = m_Graph.rootNode;
         }
 
+        /// <summary>
+        /// Allows a navigation system to go directly to the root node of the graph. 
+        /// This could be used for restarting runs, or if you need to initialize the graph 
+        /// before Start() is called.
+        /// </summary>
+        /// <returns> RoomNode: the root roomNode data, or null if there is no graph.</returns>
         public RoomNode TryEnterFirstRoom()
         {
             if(m_Graph == null)
@@ -79,40 +82,31 @@ namespace NGAME
             m_CurrentRoom = m_Graph.rootNode;
             return m_Graph.rootNode;
         }
-
+        /// <summary>
+        /// Find RoomNode data by the node's guid. Typically used to check 
+        /// information about the rooms connected to the current room.
+        /// </summary>
+        /// <param name="guid"> The guid of the room to search for</param>
+        /// <returns>RoomNode</returns>
         public RoomNode GetRoomByGuid(string guid)
         {
             return m_Graph.GetNodeByGuid(guid) as RoomNode;
         }
 
-        //private IEnumerator LoadAfterSeconds(float seconds, string sceneName)
-        //{
-        //    if (RoomLoadStart != null) RoomLoadStart.Invoke();
-        //    yield return new WaitForSeconds(seconds);
-
-        //    SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
-        //}
-
-        //protected void LoadScene(string sceneName)
-        //{
-        //    //if (CircleWipe != null)
-        //    //{
-        //    //    StartCoroutine(LoadAfterSeconds(CircleWipe.FadeSeconds));
-        //    //}
-        //    //else
-        //    //{
-        //    //    if (RoomLoadStart != null) RoomLoadStart.Invoke();
-        //    //    RuntimeManager.PlayOneShot("event:/sfx/RoomTransition");
-        //    //    SceneManager.LoadScene(_nextRoom.SceneName, LoadSceneMode.Single);
-        //    //}
-
-        //    if (RoomLoadStart != null) RoomLoadStart.Invoke();
-        //    SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
-        //}
-
-        //this completes initialization of current room data 
+        
+        /// <summary>
+        /// Completes the initialization of a room. It sets up data
+        /// for the room's exits, and spawners, and increments the visit count.
+        /// </summary>
+        /// <param name="scene"> the scene which just loaded</param>
+        /// <param name="mode"> LoadSceneMode is not actually usedin this function, 
+        /// but required for event subscription</param>
         public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
+            if (m_CurrentRoom == null || m_CurrentRoom.SceneData == null 
+                || scene.name != m_CurrentRoom.SceneData.name)
+                return;
+                
             m_CurrentRoomExits = m_CurrentRoom.GetAllEdgesAsOutgoing();
             InitConnectorsAndSpawners(scene);
             if (!m_RoomGuidVisitCounts.ContainsKey(m_CurrentRoom.Guid))
@@ -126,6 +120,11 @@ namespace NGAME
 
         }
 
+        /// <summary>
+        /// Clears the CurrentConntectors and CurrentSpawnPoints lists of the previous rooms components
+        /// and loads them with the current room's components.
+        /// </summary>
+        /// <param name="loadedScene">The room's scene that is being initialized</param>
         protected void InitConnectorsAndSpawners(Scene loadedScene)
         {
             m_CurrentConnectors.Clear();
@@ -160,6 +159,13 @@ namespace NGAME
             }
         }
 
+        /// <summary>
+        /// Intended to be called from a navigation system to begin the transition 
+        /// to a new roomNode.
+        /// </summary>
+        /// <param name="edge"> data about the connection we wish to traverse, 
+        /// technically only the destination portion of the data is necessary</param>
+        /// <returns></returns>
         public bool TryEnterRoom(EdgeData edge)
         {
             if (PrintDebugLogs) Debug.Log("MapGraphRuntime is trying to enter a room");
@@ -175,6 +181,7 @@ namespace NGAME
             return false;
         }
 
+#if UNITY_EDITOR
         public bool TryEnterRoomFromGraph(EdgeData edge, RoomGraph graph)
         {
             if (graph == null || m_PlaymodeFromGraphInvoked)
@@ -192,25 +199,28 @@ namespace NGAME
             m_Graph = oldGraph;
             return false;
         }
+#endif
 
-        //intended to be called BEFORE a room is entered a second time (currently visit is incremented on scene load)
+        /// <summary>
+        /// Checks if a room has been visited before. Will return false if 
+        /// TryEnterRoom has returned true but the scene it is associated 
+        /// with has not completed loading, because the visit count is 
+        /// incremented durring the OnSceneLoaded function.
+        /// </summary>
+        /// <param name="roomNodeGuid"> the guid for a RoomNode </param>
+        /// <returns></returns>
         public bool IsRoomBacktracking(string roomNodeGuid) 
         {
             if (m_RoomGuidVisitCounts.ContainsKey(roomNodeGuid))
             {
+                if(m_CurrentRoom.Guid == roomNodeGuid)
+                {
+                    return m_RoomGuidVisitCounts[roomNodeGuid] > 1;
+                }
                 return m_RoomGuidVisitCounts[roomNodeGuid] >= 1;
             }
             return false;
         }
 
-        //intended to be called AFTER a room is entered and the visit count has been incremented
-        public bool IsCurrentRoomBacktracking()
-        {
-            if (m_RoomGuidVisitCounts.ContainsKey(m_CurrentRoom.Guid))
-            {
-                return m_RoomGuidVisitCounts[m_CurrentRoom.Guid] > 1;
-            }
-            return false;
-        }
     }
 }
