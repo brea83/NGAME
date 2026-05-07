@@ -223,5 +223,19 @@ namespace NGAME
             return false;
         }
 
+        /// <summary>
+        /// A shorthand means for checking the current room's backtracking
+        /// status without having to fetch its data directly. It will return 
+        /// incorrect data if called between TryEnterRoom and OnSceneLoaded.
+        /// </summary>
+        /// <returns>false if the current room is null, otherwise returns IsRoomBacktracking for the current room.</returns>
+        public bool IsCurrentRoomBacktracking()
+        {
+            if (m_CurrentRoom == null)
+                return false;
+            else
+                return IsRoomBacktracking(m_CurrentRoom.Guid);
+        }
+
     }
 }
