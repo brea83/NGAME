@@ -44,6 +44,7 @@ namespace NGAME
         /// If EnableNavigation is true we initialize the current room 
         /// to be the root node of the graph, otherwise we set the current
         /// room to be null so that any navigation system using this graph 
+        /// knows that it is not initialized for navigation yet. Optionally
         /// if the current room has already been set we do not reset it to 
         /// the roon node. This is also when optional debug print of the graph 
         /// happens if PrintDebugLogs is enabled. 
