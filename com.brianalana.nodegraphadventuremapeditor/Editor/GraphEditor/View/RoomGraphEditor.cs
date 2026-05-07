@@ -507,13 +507,18 @@ namespace NGAME.Editor
         private void ReadCurrentSceneData()
         {
             string[] settingsGuid = AssetDatabase.FindAssets("t:SO_NGAME_Settings");
+            SO_NGAME_Settings settings = null;
 
             if (settingsGuid.Length <= 0)
             {
-                return;
+                NGAMESettings.ShowMyEditor();
+                settings = NGAMESettings.GetWindow<NGAMESettings>().CurrentSettings;
             }
-
-            SO_NGAME_Settings settings = AssetDatabase.LoadAssetAtPath<SO_NGAME_Settings>(AssetDatabase.GUIDToAssetPath(settingsGuid[0]));
+            else
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(settingsGuid[0]);
+                settings = AssetDatabase.LoadAssetAtPath<SO_NGAME_Settings>(assetPath);
+            }
 
             if (settings == null || settings.Scenes.Count <= 0)
             {

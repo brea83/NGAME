@@ -42,7 +42,7 @@ namespace NGAME.Editor
         private List<string> m_SavedScenesNotInProject = new();
 
         private StyleSheet m_Styles;
-
+        public SO_NGAME_Settings CurrentSettings { get => m_Settings; }
         //private bool m_SettingsAreLoaded = false;
         private static void ShowEditorFromSO()
         {
@@ -63,17 +63,10 @@ namespace NGAME.Editor
             // Limit size of the window.
             wnd.minSize = new Vector2(450, 200);
 
-            SO_NGAME_Settings settings = null;
             string[] settingsGuids = AssetDatabase.FindAssets("t:SO_NGAME_Settings");
-            if (settingsGuids.Length <= 0)
-            {
-                // no settings found make a new one
-                settings = CreateNewSettingsFile();
-            }
-            else
-            {
-                settings = AssetDatabase.LoadAssetAtPath<SO_NGAME_Settings>(AssetDatabase.GUIDToAssetPath(settingsGuids[0]));
-            }
+            
+            SO_NGAME_Settings settings = LoadOrCreateSettingsFile(settingsGuids.ToList());
+            
             wnd.m_Settings = settings;
             wnd.m_SettingsSelectorField.SetValueWithoutNotify(settings);
             wnd.LoadSettingsObject();
@@ -81,13 +74,29 @@ namespace NGAME.Editor
             wnd.PopulateSceneList(wnd.m_IncompatibleScenesListView, wnd.m_UncompatibleScenes);
         }
 
-        private static SO_NGAME_Settings CreateNewSettingsFile()
+        private static SO_NGAME_Settings LoadOrCreateSettingsFile(List<string> settingsGuids)
         {
-            SO_NGAME_Settings newSettings = SO_NGAME_Settings.CreateInstance<SO_NGAME_Settings>();
+            string projectPath = null;
+            foreach (string guid in settingsGuids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (path.Contains("Assets/"))
+                {
+                    projectPath = path;
+                    break;
+                }
+            }
 
-            AssetDatabase.CreateAsset(newSettings, "Assets/NGAME_Settings.asset");
-            AssetDatabase.SaveAssets();
-            return newSettings;
+            if (!string.IsNullOrEmpty(projectPath))
+                return AssetDatabase.LoadAssetAtPath<SO_NGAME_Settings>(projectPath);
+
+            SO_NGAME_Settings settings = SO_NGAME_Settings.CreateInstance<SO_NGAME_Settings>();
+
+            AssetDatabase.CreateAsset(settings, "Assets/NGAME_Settings.asset");
+            EditorUtility.SetDirty(settings);
+            AssetDatabase.SaveAssetIfDirty(settings);
+
+            return settings;
         }
 
         [OnOpenAssetAttribute(1)]
