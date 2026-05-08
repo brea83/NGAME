@@ -35,6 +35,10 @@ namespace NGAME
         //private int _exitCount;
         //private int _entranceCount;
 
+        private void OnDestroy()
+        {
+            Debug.Log($"Destroying room node: {name}");
+        }
         public static RoomNode CreateNode(System.Type type, string guid)
         {
             RoomNode node = ScriptableObject.CreateInstance(type) as RoomNode;

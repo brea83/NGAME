@@ -19,6 +19,7 @@ namespace NGAME.Editor
         public Action<NodeView> OnNodeSelected;
         public Action<NodeView> OnNodeValuesChanged;
         public Action<EdgeData> RequestPlayMode;
+        public Action<SceneData> RequestEditScene;
         public RoomNode Node;
         public List<ConnectionPort> InputPorts = new();
         public List<ConnectionPort> OutputPorts = new();
@@ -193,20 +194,8 @@ namespace NGAME.Editor
                 return;
             }
 
-            if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-            {
-                EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
-            }
-            else
-            {
-                StringBuilder message = new();
-                message.Append("You have unsaved changes in this scene (");
-                message.Append(EditorSceneManager.GetActiveScene().name);
-                message.Append(") and chose to neither discard nor save them, so NGAME will not open ");
-                message.Append(Node.SceneData.Name);
-                message.Append(" for edits.");
-                Debug.Log( message.ToString());
-            }
+            if (RequestEditScene != null)
+                RequestEditScene.Invoke(Node.SceneData);
         }
 
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)

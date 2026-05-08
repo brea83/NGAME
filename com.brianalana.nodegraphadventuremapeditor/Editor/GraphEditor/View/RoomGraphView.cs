@@ -39,9 +39,31 @@ namespace NGAME.Editor
             return ScriptableObject.CreateInstance<UndoableGraphChanges>();
         }
 
+        private void OnDestroy()
+        {
+            Debug.Log($"Destroying undoable graph changes");
+            foreach(RoomNode node in m_UnsavedNodes)
+            {
+                DestroyImmediate(node);
+            }
+            m_UnsavedNodes.Clear();
+
+            foreach (RoomNode node in m_NodesToDelete)
+            {
+                DestroyImmediate(node);
+            }
+            m_NodesToDelete.Clear();
+
+            //scene data is being managed in the graph editor window don't need to delete here
+            m_SceneData.Clear();
+
+            m_SceneDataRefCount.Clear();
+        }
+
         public void AddSceneDataRef(SceneData data)
         {
             Undo.RegisterCompleteObjectUndo(this, $"A Node is adding a refrence to {data.name}");
+            //scene data is being managed in the graph editor window don't need to manage the hideflags
             if (m_SceneData.Contains(data))
             {
                 int index = m_SceneData.IndexOf(data);
@@ -74,13 +96,14 @@ namespace NGAME.Editor
             if (!m_UnsavedNodes.Contains(node))
             {
                 Undo.RegisterCompleteObjectUndo(this, "Add node to unsaved nodes");
-                m_UnsavedNodes.Remove(node);
+                node.hideFlags = HideFlags.HideAndDontSave;
+                m_UnsavedNodes.Add(node);
             }
 
             if (m_NodesToDelete.Contains(node))
             {
                 Undo.RegisterCompleteObjectUndo(this, "remove node from nodes to delete");
-                m_NodesToDelete.Add(node);
+                m_NodesToDelete.Remove(node);
             }
         }
         public void RemoveNode(RoomNode node)
@@ -95,13 +118,27 @@ namespace NGAME.Editor
             {
                 Undo.RegisterCompleteObjectUndo(this, "add node to nodes to delete");
                 m_NodesToDelete.Add(node);
+                node.hideFlags = HideFlags.HideAndDontSave;
             }
         }
 
+        
+
         public void Reset()
         {
+            foreach (RoomNode node in m_UnsavedNodes)
+            {
+                node.hideFlags = HideFlags.None;
+            }
             m_UnsavedNodes.Clear();
+
+            foreach (RoomNode node in m_NodesToDelete)
+            {
+                node.hideFlags = HideFlags.None;
+            }
             m_NodesToDelete.Clear();
+
+            //scene data is being managed in the graph editor window don't need to manage the hideflags
             m_SceneData.Clear();
             m_SceneDataRefCount.Clear();
         }
@@ -119,6 +156,7 @@ namespace NGAME.Editor
         public Action<NodeView> OnNodeSelected;
         public Action<NodeView> OnNodeValuesChanged;
         public Action<SceneAsset, EdgeData> RegisterPlayModeRequest;
+        public Action<SceneData> RequestEditScene;
         public Action OnGraphChanged;
 
         public Action ContextMenuNewGraphRequest;
@@ -132,7 +170,7 @@ namespace NGAME.Editor
         //public StyleSheet Style;
 
         private UndoableGraphChanges m_UndoableGraphChanges;
-        
+        //public UndoableGraphChanges UndoableChanges { get => m_UndoableGraphChanges; set => m_UndoableGraphChanges = value; }
         
         private RoomGraph _graph;
         public bool HasRoomGraph { get => _graph != null; }
@@ -151,8 +189,8 @@ namespace NGAME.Editor
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
 
-            m_UndoableGraphChanges = UndoableGraphChanges.CreateNew();
-            m_UndoableGraphChanges.hideFlags = HideFlags.DontUnloadUnusedAsset;
+            //m_UndoableGraphChanges = UndoableGraphChanges.CreateNew();
+            //m_UndoableGraphChanges.hideFlags = HideFlags.DontUnloadUnusedAsset;
 
             //var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/UI Toolkit/Styles/Editor/RoomGraphEditor.uss");
             //styleSheets.Add(styleSheet);
@@ -220,12 +258,10 @@ namespace NGAME.Editor
             if (newData == null)
                 return;
 
-            if(m_UndoableGraphChanges == null)
+            if(m_UndoableGraphChanges != null)
             {
-                m_UndoableGraphChanges = UndoableGraphChanges.CreateNew();
-                m_UndoableGraphChanges.hideFlags = HideFlags.DontUnloadUnusedAsset;
+                m_UndoableGraphChanges.AddSceneDataRef(newData);
             }
-            m_UndoableGraphChanges.AddSceneDataRef(newData);
         }
 
         internal void PopulateView(RoomGraph roomGraph)
@@ -249,6 +285,16 @@ namespace NGAME.Editor
             }
 
             EditorApplication.delayCall += OnDelayValidateGraph;
+        }
+
+        internal void InitializeUndoableGraphChanges(UndoableGraphChanges changes)
+        {
+            m_UndoableGraphChanges = changes;
+
+            //foreach(RoomNode node in changes.UnsavedNodes)
+            //{
+            //    CreateNodeView(node);
+            //}
         }
 
         private void OnDelayValidateGraph()
@@ -349,12 +395,15 @@ namespace NGAME.Editor
             AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(_graph), ImportAssetOptions.ForceUpdate);
             AssetDatabase.Refresh();
 
-            if (m_UndoableGraphChanges == null)
-                m_UndoableGraphChanges = UndoableGraphChanges.CreateNew();
-            else
+            if (m_UndoableGraphChanges != null)
+            {
                 m_UndoableGraphChanges.Reset();
 
-            m_UndoableGraphChanges.hideFlags = HideFlags.DontUnloadUnusedAsset;
+            }
+            //else
+            //    m_UndoableGraphChanges = UndoableGraphChanges.CreateNew();
+
+            //m_UndoableGraphChanges.hideFlags = HideFlags.DontUnloadUnusedAsset;
 
             PopulateView(_graph);
         }
@@ -538,6 +587,7 @@ namespace NGAME.Editor
             nodeView.OnNodeSelected = OnNodeSelected;
             nodeView.OnNodeValuesChanged = OnNodeValuesChanged;
             nodeView.RequestPlayMode = OnPlayModeRequest;
+            nodeView.RequestEditScene = RequestEditScene;
             AddElement(nodeView);
         }
 

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.Experimental.GraphView;
@@ -24,6 +26,8 @@ namespace NGAME.Editor
                 return graphs; 
             } 
         }
+
+        private UndoableGraphChanges m_UndoableGraphChanges;
         private RoomGraph _graph;
         private List<SceneData> m_sceneData = new List<SceneData>();
         private Dictionary<string, Texture2D> m_ScenePreviewLookup = new();
@@ -166,6 +170,10 @@ namespace NGAME.Editor
                 //_graph.OnWindowDestroy();
             }
             ClearCachedSceneData();
+            if (m_UndoableGraphChanges != null)
+            {
+                DestroyImmediate(m_UndoableGraphChanges);
+            }
         }
         private void OnActiveSceneChanged(Scene currentScene, Scene nextScene)
         {
@@ -242,6 +250,9 @@ namespace NGAME.Editor
                 root.styleSheets.Add(styleSheet);
                 m_Style = styleSheet;
             }
+
+            if (m_UndoableGraphChanges == null)
+                m_UndoableGraphChanges = UndoableGraphChanges.CreateNew();
             
             _graphView = root.Q<RoomGraphView>();
 
@@ -252,8 +263,10 @@ namespace NGAME.Editor
             _graphView.OnNodeSelected = OnNodeSelectionChanged;
             _graphView.OnNodeValuesChanged = OnNodeValuesChanged;
             _graphView.RegisterPlayModeRequest = RegisterPlayModeRequest;
+            _graphView.RequestEditScene = OnLoadSceneForEditPressed;
             _graphView.OnGraphChanged += OnGraphChanged;
-            
+
+            _graphView.InitializeUndoableGraphChanges(m_UndoableGraphChanges);
             _inspectorView = _graphView.GetOrCreateNodeInspector();
             _minimapWindow = _graphView.GetOrCreateMiniMap();
 
@@ -388,6 +401,33 @@ namespace NGAME.Editor
             hasUnsavedChanges = true;
         }
 
+        private void OnLoadSceneForEditPressed(SceneData sceneData)
+        {
+            HideFlags oldFlags = _graph.hideFlags;
+            _graph.hideFlags = HideFlags.HideAndDontSave;
+            HideFlags oldChangesFlags = m_UndoableGraphChanges.hideFlags;
+            m_UndoableGraphChanges.hideFlags = HideFlags.HideAndDontSave;
+            
+            if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            {
+                EditorSceneManager.OpenScene(sceneData.FilePath, OpenSceneMode.Single);
+            }
+            else
+            {
+                StringBuilder message = new();
+                message.Append("You have unsaved changes in this scene (");
+                message.Append(EditorSceneManager.GetActiveScene().name);
+                message.Append(") and chose to neither discard nor save them, so NGAME will not open ");
+                message.Append(sceneData.Name);
+                message.Append(" for edits.");
+                Debug.Log(message.ToString());
+            }
+
+            _graph.hideFlags = oldFlags;
+            m_UndoableGraphChanges.hideFlags = oldChangesFlags;
+            //_graphView.RestoreUnsavedChanges(changes);
+        }
+
         private void OnNewGraphClicked()
         {
             if (hasUnsavedChanges)
@@ -502,6 +542,8 @@ namespace NGAME.Editor
 
                 m_ScenePreviewLookup.Clear();
             }
+
+            
         }
 
         private void ReadCurrentSceneData()
