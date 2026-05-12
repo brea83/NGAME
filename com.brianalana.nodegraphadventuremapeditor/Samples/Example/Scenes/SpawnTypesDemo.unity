@@ -473,6 +473,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_data:
+    TypeName: 
     Name: 
     ConnectionType: 0
     EntranceConditions: []

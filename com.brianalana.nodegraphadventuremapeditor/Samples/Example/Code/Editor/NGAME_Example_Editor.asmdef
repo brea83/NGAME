@@ -1,10 +1,13 @@
 {
-    "name": "NGAME.Example",
-    "rootNamespace": "NGAME.Example",
+    "name": "NGAME_Example_Editor",
+    "rootNamespace": "NGAME.Example.Editor",
     "references": [
-        "GUID:fff78c916cdfc8c449f580674491fe15"
+        "GUID:7faafa444430ee84690f316edc68b564",
+        "GUID:b0f32614a87e84542abe1617f2e360e8"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

@@ -79,6 +79,8 @@ namespace NGAME.Editor
         private ListView CreateListView(SerializedProperty conditionsList)
         {
             ListView m_ListView = new ListView();
+            m_ListView.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
+            m_ListView.fixedItemHeight = 25;
             m_ListView.showBoundCollectionSize = false;
             m_ListView.name = "List-EntranceConditions";
             m_ListView.bindingPath = conditionsList.propertyPath;
@@ -88,6 +90,7 @@ namespace NGAME.Editor
             m_ListView.bindItem = (item, index) => { BindConditionItem(conditionsList, item, index); };
 
             m_ListView.Bind(conditionsList.serializedObject);
+            
             return m_ListView;
         }
 
@@ -132,7 +135,7 @@ namespace NGAME.Editor
         private VisualElement CreateConditionItem(SerializedProperty conditionsList)
         {
             var row = new VisualElement(); //BindableElement so the default bind can assign the item's root property
-            row.style.flexDirection = FlexDirection.Row;
+            row.style.flexDirection = FlexDirection.Column;
             row.style.justifyContent = Justify.SpaceBetween;
 
             row.Add(new PropertyField() { name = "ConditionPropertyDrawer"}); // default bind need this to be the first Bindable in the tree
@@ -148,6 +151,10 @@ namespace NGAME.Editor
                 }
 
             };
+            removeItemButton.style.position = Position.Absolute;
+            removeItemButton.style.right = 0;
+            removeItemButton.style.top = 0;
+            removeItemButton.style.maxHeight = 14;
             removeItemButton.tooltip = "Remove this item from the list";
 
             row.Add(removeItemButton);

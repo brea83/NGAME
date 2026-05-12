@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NGAME
+namespace NGAME.Example
 {
     [System.Serializable]
     public class EC_Test : EntranceCondition
