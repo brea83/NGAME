@@ -23,9 +23,9 @@ namespace NGAME.Editor
         //public ConnectionContainer GetConnectionContainer => GetFirstAncestorOfType<ConnectionContainer>();
 
         // TODO update this with better constraints once custom edge class is made?
-        public static ConnectionPort Create<TEdge>(Orientation orientation, Direction direction, Capacity capacity, Type type) where TEdge : Edge, new()
+        public static ConnectionPort Create<TEdge>(Orientation orientation, Direction direction, Capacity capacity, Type type, string name = "") where TEdge : Edge, new()
         {
-            CustomEdgeConnectorListener listener = new();
+            CustomEdgeConnectorListener listener = new(name);
             ConnectionPort port = new ConnectionPort(orientation, direction, capacity, type)
             {
                 m_EdgeConnector = new EdgeConnector<TEdge>(listener)
@@ -35,7 +35,11 @@ namespace NGAME.Editor
 
             port.AddManipulator(menuManipulator);
             port.AddManipulator(port.m_EdgeConnector);
-            port.portName = direction == Direction.Input ? "In" : "Out";
+            if(string.IsNullOrEmpty(name))
+                port.portName = direction == Direction.Input ? "In" : "Out";
+            else
+                port.portName = name;
+
             port.tooltip = m_RightClickHint;
             Label label = port.Q<Label>();
 
@@ -60,12 +64,14 @@ namespace NGAME.Editor
 
         protected class CustomEdgeConnectorListener : IEdgeConnectorListener
         {
+            protected string m_PortName;
             protected GraphViewChange m_GraphViewChange;
             protected List<Edge> m_EdgesToCreate;
             protected List<GraphElement> m_EdgesToDelete;
 
-            public CustomEdgeConnectorListener()
+            public CustomEdgeConnectorListener(string name = "defaultName")
             {
+                m_PortName = name;
                 m_EdgesToCreate = new();
                 m_EdgesToDelete = new();
                 m_GraphViewChange.edgesToCreate = m_EdgesToCreate;
@@ -120,7 +126,9 @@ namespace NGAME.Editor
 
             public void OnDropOutsidePort(Edge edge, Vector2 position)
             {
+                Debug.Log($"connectionPort: OnDropOutsidePort from port {m_PortName}. with edge input: {edge.input.portName}, and output {edge.output.portName}");
                 
+                NodeView.RemoveEdge(edge);
             }
         }
 

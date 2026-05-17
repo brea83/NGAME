@@ -512,13 +512,13 @@ namespace NGAME.Editor
         private void CreateOutputPorts()
         {
             if (Node.SceneData == null || Node.SceneData.Guid == null) return;
-            
-            foreach(var exit in Node.SceneData.Exits)
+
+            foreach (var exit in Node.SceneData.Exits)
             {
-                ConnectionPort output = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool)) as ConnectionPort;
-                if(output != null)
+                ConnectionPort output = ConnectionPort.Create<Edge>(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool), exit.Name);
+                if (output != null)
                 {
-                    output.portName = exit.Name;
+                    //output.portName = exit.Name;
                     OutputPorts.Add(output);
                     outputContainer.Add(output);
                 }
@@ -788,12 +788,13 @@ namespace NGAME.Editor
             Direction flowDirection = Direction.Input, Port.Capacity portCapacity = Port.Capacity.Multi, 
             Orientation orientation = Orientation.Horizontal)
         {
-            ConnectionPort newPort = InstantiatePort(orientation, flowDirection, portCapacity, passedDataType) as ConnectionPort;
+            ConnectionPort newPort = ConnectionPort.Create<Edge>(orientation, flowDirection, portCapacity, passedDataType, portName);
+
             if (newPort != null)
             {
                 //newPort.conn
                 m_ValidPortColor = newPort.portColor;
-                newPort.portName = portName;
+                //newPort.portName = portName;
                 portList.Add(newPort);
                 portContainer.Add(newPort);
             }
@@ -895,7 +896,7 @@ namespace NGAME.Editor
              
             if(sourceNode != null && destinationNode != null)
             {
-                EdgeData newEdgeData = CreateEdgeDataFromEdge(edge);
+                EdgeData newEdgeData = CreateEdgeDataFromEdge(edge, sourceNode, destinationNode);
 
                 Undo.IncrementCurrentGroup();
                 Undo.RecordObjects(new UnityEngine.Object[]{ sourceNode.Node, destinationNode.Node}, "NGAME - disconnect nodes");
@@ -907,11 +908,12 @@ namespace NGAME.Editor
             } 
         }
 
-        protected static EdgeData CreateEdgeDataFromEdge(Edge edge)
+        protected static EdgeData CreateEdgeDataFromEdge(Edge edge, NodeView sourceNode = null, NodeView destinationNode = null)
         {
             EdgeData result;
-            NodeView sourceNode = edge.output.node as NodeView;
-            NodeView destinationNode = edge.input.node as NodeView;
+            sourceNode = sourceNode != null ? sourceNode : edge.output.node as NodeView;
+            destinationNode =  destinationNode != null ? destinationNode :  edge.input.node as NodeView;
+            
             SceneData sourceScene = sourceNode != null && sourceNode.Node != null ? sourceNode.Node.SceneData : null;
             SceneData destinationScene = destinationNode != null && destinationNode.Node != null ? destinationNode.Node.SceneData : null; 
 
@@ -925,8 +927,9 @@ namespace NGAME.Editor
             }
             else if(sourceScene != null)
             {
+                string destinationNodeGuid = destinationNode != null ? destinationNode.Node.Guid : "";
                 result = new EdgeData(sourceNode.Node.Guid, sourceScene.Guid, sourceScene.Name, outputName,
-                    "", "", "", inputName);
+                    destinationNodeGuid, "", "", inputName);
             }
             else if (destinationScene != null)
             {
